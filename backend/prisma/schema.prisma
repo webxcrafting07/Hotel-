@@ -1,0 +1,526 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  MANAGER
+  RECEPTIONIST
+  HOUSEKEEPING
+  ACCOUNTANT
+  STAFF
+  CUSTOMER
+}
+
+enum RoomStatus {
+  AVAILABLE
+  OCCUPIED
+  MAINTENANCE
+  CLEANING
+  RESERVED
+}
+
+enum RoomType {
+  STANDARD
+  DELUXE
+  SUPERIOR
+  JUNIOR_SUITE
+  SUITE
+  PRESIDENTIAL_SUITE
+}
+
+enum BedType {
+  SINGLE
+  DOUBLE
+  QUEEN
+  KING
+  TWIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  CHECKED_OUT
+  CANCELLED
+  NO_SHOW
+}
+
+enum PaymentStatus {
+  PENDING
+  PARTIAL
+  PAID
+  REFUNDED
+  FAILED
+}
+
+enum PaymentMethod {
+  RAZORPAY
+  STRIPE
+  UPI
+  CARD
+  NET_BANKING
+  WALLET
+  CASH
+}
+
+enum HousekeepingStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  VERIFIED
+}
+
+model User {
+  id                String    @id @default(uuid())
+  email             String    @unique
+  phone             String?   @unique
+  password          String
+  firstName         String
+  lastName          String
+  avatar            String?
+  role              Role      @default(CUSTOMER)
+  isEmailVerified   Boolean   @default(false)
+  isPhoneVerified   Boolean   @default(false)
+  isActive          Boolean   @default(true)
+  refreshToken      String?
+  passwordResetToken String?
+  passwordResetExpiry DateTime?
+  emailVerifyToken  String?
+  twoFactorSecret   String?
+  twoFactorEnabled  Boolean   @default(false)
+  loyaltyPoints     Int       @default(0)
+  referralCode      String?   @unique
+  referredBy        String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  bookings          Booking[]
+  reviews           Review[]
+  notifications     Notification[]
+  auditLogs         AuditLog[]
+  wishlist          Wishlist[]
+  staffProfile      Staff?
+  spaAppointments   SpaAppointment[]
+  restaurantReservations RestaurantReservation[]
+  blogPosts         Blog[]
+
+  @@map("users")
+}
+
+model Room {
+  id              String      @id @default(uuid())
+  roomNumber      String      @unique
+  floor           Int
+  roomType        RoomType
+  name            String
+  description     String      @db.Text
+  basePrice       Decimal?    @db.Decimal(10, 2)
+  pricePerNight   Decimal     @db.Decimal(10, 2)
+  weekendPrice    Decimal     @db.Decimal(10, 2)
+  festivalPrice   Decimal     @db.Decimal(10, 2)
+  status          RoomStatus  @default(AVAILABLE)
+  maxAdults       Int         @default(2)
+  maxChildren     Int         @default(1)
+  maxOccupancy    Int         @default(3)
+  bedType         BedType
+  bathrooms       Int         @default(1)
+  hasBalcony      Boolean     @default(false)
+  hasWifi         Boolean     @default(true)
+  hasAC           Boolean     @default(true)
+  hasBreakfast    Boolean     @default(false)
+  hasTV           Boolean     @default(true)
+  hasRoomService  Boolean     @default(true)
+  size            Decimal?    @db.Decimal(6, 2)
+  view            String?
+  cancelPolicy    String?     @db.Text
+  virtualTourUrl  String?
+  isActive        Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  images          RoomImage[]
+  amenities       RoomAmenity[]
+  bookings        Booking[]
+  reviews         Review[]
+  wishlist        Wishlist[]
+  housekeepingTasks HousekeepingTask[]
+
+  @@map("rooms")
+}
+
+model RoomImage {
+  id          String   @id @default(uuid())
+  roomId      String
+  url         String
+  publicId    String
+  alt         String?
+  isVideo     Boolean  @default(false)
+  isPrimary   Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  room        Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@map("room_images")
+}
+
+model Amenity {
+  id          String        @id @default(uuid())
+  name        String        @unique
+  icon        String?
+  category    String?
+  createdAt   DateTime      @default(now())
+
+  rooms       RoomAmenity[]
+
+  @@map("amenities")
+}
+
+model RoomAmenity {
+  roomId      String
+  amenityId   String
+
+  room        Room    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  amenity     Amenity @relation(fields: [amenityId], references: [id], onDelete: Cascade)
+
+  @@id([roomId, amenityId])
+  @@map("room_amenities")
+}
+
+model Booking {
+  id              String        @id @default(uuid())
+  bookingNumber   String        @unique
+  userId          String
+  roomId          String
+  checkIn         DateTime
+  checkOut        DateTime
+  nights          Int
+  adults          Int
+  children        Int
+  extraBeds       Int           @default(0)
+  status          BookingStatus @default(PENDING)
+  paymentStatus   PaymentStatus @default(PENDING)
+  roomPrice       Decimal       @db.Decimal(10, 2)
+  extraBedPrice   Decimal       @default(0) @db.Decimal(10, 2)
+  taxAmount       Decimal       @default(0) @db.Decimal(10, 2)
+  discountAmount  Decimal       @default(0) @db.Decimal(10, 2)
+  totalAmount     Decimal       @db.Decimal(10, 2)
+  paidAmount      Decimal       @default(0) @db.Decimal(10, 2)
+  couponId        String?
+  specialRequests String?       @db.Text
+  guestName       String?
+  guestEmail      String?
+  guestPhone      String?
+  guestAddress    String?       @db.Text
+  idProofType     String?
+  idProofUrl      String?
+  isOffline       Boolean       @default(false)
+  checkInTime     DateTime?
+  checkOutTime    DateTime?
+  qrCode          String?
+  cancellationReason String?    @db.Text
+  cancelledAt     DateTime?
+  refundAmount    Decimal?      @db.Decimal(10, 2)
+  refundedAt      DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  user            User          @relation(fields: [userId], references: [id])
+  room            Room          @relation(fields: [roomId], references: [id])
+  coupon          Coupon?       @relation(fields: [couponId], references: [id])
+  payments        Payment[]
+  invoice         Invoice?
+
+  @@map("bookings")
+}
+
+model Payment {
+  id                String        @id @default(uuid())
+  bookingId         String
+  amount            Decimal       @db.Decimal(10, 2)
+  currency          String        @default("INR")
+  method            PaymentMethod
+  status            PaymentStatus @default(PENDING)
+  transactionId     String?       @unique
+  gatewayOrderId    String?
+  gatewayPaymentId  String?
+  gatewaySignature  String?
+  refundId          String?
+  refundAmount      Decimal?      @db.Decimal(10, 2)
+  metadata          Json?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  booking           Booking       @relation(fields: [bookingId], references: [id])
+
+  @@map("payments")
+}
+
+model Invoice {
+  id              String   @id @default(uuid())
+  bookingId       String   @unique
+  invoiceNumber   String   @unique
+  issueDate       DateTime @default(now())
+  dueDate         DateTime?
+  subtotal        Decimal  @db.Decimal(10, 2)
+  cgst            Decimal  @default(0) @db.Decimal(10, 2)
+  sgst            Decimal  @default(0) @db.Decimal(10, 2)
+  igst            Decimal  @default(0) @db.Decimal(10, 2)
+  total           Decimal  @db.Decimal(10, 2)
+  pdfUrl          String?
+  notes           String?  @db.Text
+  createdAt       DateTime @default(now())
+
+  booking         Booking  @relation(fields: [bookingId], references: [id])
+
+  @@map("invoices")
+}
+
+model Coupon {
+  id              String    @id @default(uuid())
+  code            String    @unique
+  description     String?
+  discountType    String    // PERCENTAGE or FIXED
+  discountValue   Decimal   @db.Decimal(10, 2)
+  minBookingAmount Decimal? @db.Decimal(10, 2)
+  maxDiscount     Decimal?  @db.Decimal(10, 2)
+  usageLimit      Int?
+  usedCount       Int       @default(0)
+  validFrom       DateTime
+  validUntil      DateTime
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+
+  bookings        Booking[]
+
+  @@map("coupons")
+}
+
+model Review {
+  id          String   @id @default(uuid())
+  userId      String
+  roomId      String?
+  rating      Int
+  title       String?
+  comment     String   @db.Text
+  images      String[]
+  isVerified  Boolean  @default(false)
+  isApproved  Boolean  @default(false)
+  adminReply  String?  @db.Text
+  repliedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id])
+  room        Room?    @relation(fields: [roomId], references: [id])
+
+  @@map("reviews")
+}
+
+model Blog {
+  id          String    @id @default(uuid())
+  authorId    String
+  title       String
+  slug        String    @unique
+  excerpt     String?   @db.Text
+  content     String    @db.Text
+  coverImage  String?
+  category    String?
+  tags        String[]
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  metaTitle   String?
+  metaDesc    String?
+  viewCount   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  author      User      @relation(fields: [authorId], references: [id])
+
+  @@map("blogs")
+}
+
+model Gallery {
+  id          String   @id @default(uuid())
+  url         String
+  publicId    String
+  title       String?
+  description String?
+  category    String?
+  mediaType   String   @default("image") // image or video
+  albumId     String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@map("gallery")
+}
+
+model RestaurantReservation {
+  id          String   @id @default(uuid())
+  userId      String?
+  name        String
+  email       String
+  phone       String
+  date        DateTime
+  time        String
+  guests      Int
+  occasion    String?
+  requests    String?  @db.Text
+  status      String   @default("PENDING")
+  createdAt   DateTime @default(now())
+
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@map("restaurant_reservations")
+}
+
+model SpaService {
+  id          String   @id @default(uuid())
+  name        String
+  description String?  @db.Text
+  duration    Int      // minutes
+  price       Decimal  @db.Decimal(10, 2)
+  category    String?
+  image       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  appointments SpaAppointment[]
+
+  @@map("spa_services")
+}
+
+model SpaAppointment {
+  id          String     @id @default(uuid())
+  userId      String?
+  serviceId   String
+  staffId     String?
+  name        String
+  email       String
+  phone       String
+  date        DateTime
+  time        String
+  status      String     @default("PENDING")
+  notes       String?
+  amount      Decimal    @db.Decimal(10, 2)
+  createdAt   DateTime   @default(now())
+
+  user        User?      @relation(fields: [userId], references: [id])
+  service     SpaService @relation(fields: [serviceId], references: [id])
+  staff       Staff?     @relation(fields: [staffId], references: [id])
+
+  @@map("spa_appointments")
+}
+
+model Staff {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  department  String
+  designation String?
+  joiningDate DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+  housekeepingTasks HousekeepingTask[]
+  spaAppointments   SpaAppointment[]
+
+  @@map("staff")
+}
+
+model HousekeepingTask {
+  id          String             @id @default(uuid())
+  roomId      String
+  staffId     String?
+  taskType    String             // CLEANING, MAINTENANCE, LAUNDRY
+  status      HousekeepingStatus @default(PENDING)
+  priority    String             @default("NORMAL")
+  notes       String?
+  scheduledAt DateTime?
+  completedAt DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  room        Room               @relation(fields: [roomId], references: [id])
+  staff       Staff?             @relation(fields: [staffId], references: [id])
+
+  @@map("housekeeping_tasks")
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  userId      String
+  title       String
+  message     String   @db.Text
+  type        String   // INFO, SUCCESS, WARNING, ERROR
+  isRead      Boolean  @default(false)
+  link        String?
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String?
+  action      String
+  entity      String
+  entityId    String?
+  oldData     Json?
+  newData     Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model Wishlist {
+  userId      String
+  roomId      String
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+  room        Room     @relation(fields: [roomId], references: [id])
+
+  @@id([userId, roomId])
+  @@map("wishlists")
+}
+
+model WebsiteSetting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String   @db.Text
+  type        String   @default("text")
+  group       String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("website_settings")
+}
+
+model Package {
+  id          String   @id @default(uuid())
+  name        String
+  description String   @db.Text
+  price       Decimal  @db.Decimal(10, 2)
+  duration    Int      // nights
+  image       String?
+  includes    String[]
+  isActive    Boolean  @default(true)
+  validFrom   DateTime?
+  validUntil  DateTime?
+  createdAt   DateTime @default(now())
+
+  @@map("packages")
+}
