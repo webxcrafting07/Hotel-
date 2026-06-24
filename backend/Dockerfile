@@ -17,6 +17,8 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/src/prisma ./src/prisma
 
+RUN mkdir -p logs && chown -R expressjs:nodejs logs
+
 USER expressjs
 EXPOSE 5000
 CMD ["node", "dist/server.js"]
