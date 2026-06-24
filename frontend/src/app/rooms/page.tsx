@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
@@ -13,7 +13,7 @@ import { formatCurrency } from "@/lib/utils"
 
 const roomTypes = ["ALL", "STANDARD", "DELUXE", "SUPERIOR", "JUNIOR_SUITE", "SUITE", "PRESIDENTIAL_SUITE"]
 
-export default function RoomsPage() {
+function RoomsContent() {
   const searchParams = useSearchParams()
   const [selectedType, setSelectedType] = useState("ALL")
   const [sortBy, setSortBy] = useState("pricePerNight")
@@ -243,5 +243,17 @@ export default function RoomsPage() {
         </div>
       </section>
     </MainLayout>
+  )
+}
+
+export default function RoomsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-10 h-10 border-2 border-gold-500 border-t-transparent rounded-full" />
+      </div>
+    }>
+      <RoomsContent />
+    </Suspense>
   )
 }

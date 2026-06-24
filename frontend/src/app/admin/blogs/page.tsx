@@ -109,7 +109,7 @@ function BlogModal({ blog, onClose, onSuccess }: { blog: Blog|null; onClose:()=>
   const [form, setForm] = useState({
     title: blog?.title || "", category: blog?.category || "", excerpt: blog?.excerpt || "",
     content: blog?.content || "", tags: blog?.tags?.join(", ") || "", isPublished: blog?.isPublished || false,
-    metaTitle: blog?.metaTitle || "", metaDesc: (blog as any)?.metaDesc || "", coverImage: blog?.coverImage || ""
+    metaTitle: (blog as any)?.metaTitle || "", metaDesc: (blog as any)?.metaDesc || "", coverImage: blog?.coverImage || ""
   })
   const [loading, setLoading] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)

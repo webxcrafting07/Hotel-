@@ -69,7 +69,7 @@ export default function AdminAnalyticsPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${(v/1000).toFixed(0)}k`} />
-                <Tooltip formatter={(v: number) => [formatCurrency(v), "Revenue"]} />
+                <Tooltip formatter={(v: any) => [formatCurrency(v), "Revenue"]} />
                 <Bar dataKey="revenue" fill="#C9A84C" radius={[4,4,0,0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -89,7 +89,7 @@ export default function AdminAnalyticsPage() {
                     dataKey="bookings" label={false}>
                     {roomTypeData.map((_: any, i: number) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                   </Pie>
-                  <Tooltip formatter={(v: number) => [v, "Bookings"]} />
+                  <Tooltip formatter={(v: any) => [v, "Bookings"]} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="space-y-2">
