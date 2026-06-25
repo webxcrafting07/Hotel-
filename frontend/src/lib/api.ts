@@ -37,7 +37,7 @@ api.interceptors.response.use(
       isRefreshing = true
 
       try {
-        await api.post('/auth/refresh-token')
+        await axios.post(`${API_URL}/auth/refresh-token`, {}, { withCredentials: true })
         processQueue(null)
         return api(originalRequest)
       } catch (refreshError) {
