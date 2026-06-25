@@ -25,10 +25,10 @@ export default function HomePage() {
       <WelcomeSection />
       <FeaturedRooms />
       <AmenitiesSection />
-      <TestimonialsSection />
       <GallerySection />
       <NearbyAttractions />
       <InstagramFeed />
+      <TestimonialsSection />
       <LocationMap />
       <Newsletter />
     </MainLayout>
