@@ -55,7 +55,7 @@ export function AmenitiesSection() {
             className="lg:col-span-2 lg:row-span-2 relative rounded-3xl overflow-hidden group shadow-xl"
           >
             <img 
-              src="https://images.unsplash.com/photo-1542314831-c53cd4b85ca4?q=80&w=1200" 
+              src="/images/welcome/pool.png" 
               alt="Luxury Pool" 
               className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
             />
@@ -110,7 +110,7 @@ export function AmenitiesSection() {
             className="lg:col-span-2 lg:row-span-2 relative rounded-3xl overflow-hidden group shadow-xl"
           >
             <img 
-              src="https://images.unsplash.com/photo-1582719478250-c89fae4dc85b?q=80&w=1200" 
+              src="/images/welcome/bed.png" 
               alt="Premium Bedding" 
               className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
             />
