@@ -45,23 +45,23 @@ export function AmenitiesSection() {
         </motion.div>
 
         {/* Editorial Mixed Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 auto-rows-[220px]">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           
           {/* Top Left Large Image */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="lg:col-span-2 lg:row-span-2 relative rounded-3xl overflow-hidden group shadow-xl"
+            className="col-span-2 lg:row-span-2 min-h-[280px] sm:min-h-[350px] lg:min-h-0 relative rounded-3xl overflow-hidden group shadow-xl"
           >
             <img 
               src="/images/welcome/pool.png" 
               alt="Luxury Pool" 
-              className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-            <div className="absolute bottom-8 left-8 pr-8">
-              <h3 className="font-serif text-3xl text-white mb-2">Relax & Unwind</h3>
+            <div className="absolute bottom-6 left-6 right-6 lg:bottom-8 lg:left-8 lg:right-8">
+              <h3 className="font-serif text-2xl lg:text-3xl text-white mb-2">Relax & Unwind</h3>
               <p className="text-gray-200 text-sm">Experience our temperature-controlled infinity pool</p>
             </div>
           </motion.div>
@@ -74,13 +74,13 @@ export function AmenitiesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="p-6 rounded-3xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-gold-500/50 hover:shadow-2xl hover:shadow-gold-500/10 transition-all duration-300 flex flex-col justify-center group"
+              className="col-span-1 p-4 md:p-6 lg:min-h-[220px] rounded-3xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-gold-500/50 hover:shadow-2xl hover:shadow-gold-500/10 transition-all duration-300 flex flex-col justify-center group"
             >
-              <div className="w-12 h-12 rounded-xl bg-gold-50 dark:bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-gold-500 transition-all duration-300">
-                <amenity.icon className="w-6 h-6 text-gold-600 group-hover:text-white transition-colors" />
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gold-50 dark:bg-white/5 flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 group-hover:bg-gold-500 transition-all duration-300">
+                <amenity.icon className="w-5 h-5 md:w-6 md:h-6 text-gold-600 group-hover:text-white transition-colors" />
               </div>
-              <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-1">{amenity.title}</h3>
-              <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-2">{amenity.desc}</p>
+              <h3 className="font-bold text-gray-900 dark:text-white text-base md:text-lg mb-1">{amenity.title}</h3>
+              <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm line-clamp-2 md:line-clamp-3">{amenity.desc}</p>
             </motion.div>
           ))}
 
@@ -92,13 +92,13 @@ export function AmenitiesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="p-6 rounded-3xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-gold-500/50 hover:shadow-2xl hover:shadow-gold-500/10 transition-all duration-300 flex flex-col justify-center group"
+              className="col-span-1 p-4 md:p-6 lg:min-h-[220px] rounded-3xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-gold-500/50 hover:shadow-2xl hover:shadow-gold-500/10 transition-all duration-300 flex flex-col justify-center group"
             >
-              <div className="w-12 h-12 rounded-xl bg-gold-50 dark:bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-gold-500 transition-all duration-300">
-                <amenity.icon className="w-6 h-6 text-gold-600 group-hover:text-white transition-colors" />
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gold-50 dark:bg-white/5 flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 group-hover:bg-gold-500 transition-all duration-300">
+                <amenity.icon className="w-5 h-5 md:w-6 md:h-6 text-gold-600 group-hover:text-white transition-colors" />
               </div>
-              <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-1">{amenity.title}</h3>
-              <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-2">{amenity.desc}</p>
+              <h3 className="font-bold text-gray-900 dark:text-white text-base md:text-lg mb-1">{amenity.title}</h3>
+              <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm line-clamp-2 md:line-clamp-3">{amenity.desc}</p>
             </motion.div>
           ))}
 
@@ -107,16 +107,16 @@ export function AmenitiesSection() {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="lg:col-span-2 lg:row-span-2 relative rounded-3xl overflow-hidden group shadow-xl"
+            className="col-span-2 lg:row-span-2 min-h-[280px] sm:min-h-[350px] lg:min-h-0 relative rounded-3xl overflow-hidden group shadow-xl"
           >
             <img 
               src="/images/welcome/bed.png" 
               alt="Premium Bedding" 
-              className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-            <div className="absolute bottom-8 left-8 pr-8">
-              <h3 className="font-serif text-3xl text-white mb-2">Rest & Restore</h3>
+            <div className="absolute bottom-6 left-6 right-6 lg:bottom-8 lg:left-8 lg:right-8">
+              <h3 className="font-serif text-2xl lg:text-3xl text-white mb-2">Rest & Restore</h3>
               <p className="text-gray-200 text-sm">Discover the meaning of true comfort</p>
             </div>
           </motion.div>
@@ -129,13 +129,13 @@ export function AmenitiesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="p-6 rounded-3xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-gold-500/50 hover:shadow-2xl hover:shadow-gold-500/10 transition-all duration-300 flex flex-col justify-center group"
+              className="col-span-1 p-4 md:p-6 lg:min-h-[220px] rounded-3xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-gold-500/50 hover:shadow-2xl hover:shadow-gold-500/10 transition-all duration-300 flex flex-col justify-center group"
             >
-              <div className="w-12 h-12 rounded-xl bg-gold-50 dark:bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-gold-500 transition-all duration-300">
-                <amenity.icon className="w-6 h-6 text-gold-600 group-hover:text-white transition-colors" />
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gold-50 dark:bg-white/5 flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 group-hover:bg-gold-500 transition-all duration-300">
+                <amenity.icon className="w-5 h-5 md:w-6 md:h-6 text-gold-600 group-hover:text-white transition-colors" />
               </div>
-              <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-1">{amenity.title}</h3>
-              <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-2">{amenity.desc}</p>
+              <h3 className="font-bold text-gray-900 dark:text-white text-base md:text-lg mb-1">{amenity.title}</h3>
+              <p className="text-gray-500 dark:text-gray-400 text-xs md:text-sm line-clamp-2 md:line-clamp-3">{amenity.desc}</p>
             </motion.div>
           ))}
 
