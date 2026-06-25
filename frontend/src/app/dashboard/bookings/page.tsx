@@ -127,8 +127,12 @@ export default function BookingsPage() {
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    {(!item.isGroup && item.invoice) || (item.isGroup && item.bookings?.[0]?.invoice) ? (
-                      <button onClick={(e) => e.preventDefault()} className="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-gray-200 dark:border-white/10 rounded-lg hover:border-gold-500 text-gray-600 dark:text-gray-300 transition-colors">
+                    {(!item.isGroup && item.invoice) ? (
+                      <button onClick={(e) => { e.preventDefault(); router.push(`/dashboard/invoices/${item.id}`) }} className="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-gray-200 dark:border-white/10 rounded-lg hover:border-gold-500 text-gray-600 dark:text-gray-300 transition-colors">
+                        <FileText className="w-3.5 h-3.5" /> Invoice
+                      </button>
+                    ) : (item.isGroup && item.bookings?.[0]?.invoice) ? (
+                      <button onClick={(e) => { e.preventDefault(); router.push(`/dashboard/invoices/group/${item.groupId}`) }} className="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-gray-200 dark:border-white/10 rounded-lg hover:border-gold-500 text-gray-600 dark:text-gray-300 transition-colors">
                         <FileText className="w-3.5 h-3.5" /> Invoice
                       </button>
                     ) : null}

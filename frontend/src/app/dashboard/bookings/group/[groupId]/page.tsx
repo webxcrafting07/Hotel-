@@ -248,7 +248,7 @@ export default function GroupBookingDetailsPage() {
             disabled={!group.invoice}
             onClick={() => {
               if (group.invoice) {
-                router.push(`/dashboard/invoices/${group.bookings[0].id}`);
+                router.push(`/dashboard/invoices/group/${group.groupId}`);
               }
             }}
             className="w-full p-4 border border-gray-200 dark:border-white/10 rounded-xl flex items-center justify-between hover:border-gold-500 hover:text-gold-500 transition-colors group disabled:opacity-50 disabled:cursor-not-allowed"
