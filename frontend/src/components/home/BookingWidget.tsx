@@ -27,86 +27,79 @@ export function BookingWidget() {
       transition={{ duration: 0.6, delay: 0.3 }}
       className="relative z-20 max-w-5xl mx-auto -mt-10 px-4"
     >
-      <div className="bg-white dark:bg-[#0a0a0a] rounded-3xl p-6 md:p-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] dark:shadow-none border border-gray-100 dark:border-white/10 relative overflow-hidden">
-        {/* Subtle top gradient line for premium feel */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-gold-600 via-gold-400 to-gold-600 opacity-50" />
+      <div className="bg-white dark:bg-[#0a0a0a] rounded-3xl md:rounded-full p-3 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] dark:shadow-none border border-gray-100 dark:border-white/10 relative z-30">
         
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-50 dark:bg-gold-500/10 text-gold-600 dark:text-gold-400 text-[10px] font-bold tracking-[0.2em] uppercase">
-            <span className="w-1.5 h-1.5 rounded-full bg-gold-500" />
-            Reserve Your Stay
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
+        <div className="flex flex-col md:flex-row items-center divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-white/10">
+          
           {/* Check-in */}
-          <div className="group">
-            <label className="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-1">
+          <div className="w-full md:flex-1 group relative cursor-pointer px-4 md:px-8 py-3">
+            <label className="block text-[10px] md:text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1 cursor-pointer">
               Check-in
             </label>
-            <div className="relative">
-              <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gold-500 pointer-events-none" />
+            <div className="flex items-center gap-3">
+              <Calendar className="w-4 h-4 text-gold-500" />
               <input
                 type="date"
                 value={checkIn ? format(checkIn, "yyyy-MM-dd") : ""}
                 min={format(new Date(), "yyyy-MM-dd")}
                 onChange={(e) => setCheckIn(e.target.value ? new Date(e.target.value) : null)}
-                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-white/5 border border-transparent hover:border-gray-200 dark:hover:border-white/10 rounded-2xl text-gray-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-transparent transition-all cursor-pointer"
+                className="w-full bg-transparent text-gray-900 dark:text-white text-sm font-semibold focus:outline-none cursor-pointer"
               />
             </div>
           </div>
 
           {/* Check-out */}
-          <div>
-            <label className="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-1">
+          <div className="w-full md:flex-1 group relative cursor-pointer px-4 md:px-8 py-3">
+            <label className="block text-[10px] md:text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1 cursor-pointer">
               Check-out
             </label>
-            <div className="relative">
-              <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gold-500 pointer-events-none" />
+            <div className="flex items-center gap-3">
+              <Calendar className="w-4 h-4 text-gold-500" />
               <input
                 type="date"
                 value={checkOut ? format(checkOut, "yyyy-MM-dd") : ""}
                 min={checkIn ? format(checkIn, "yyyy-MM-dd") : format(new Date(), "yyyy-MM-dd")}
                 onChange={(e) => setCheckOut(e.target.value ? new Date(e.target.value) : null)}
-                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-white/5 border border-transparent hover:border-gray-200 dark:hover:border-white/10 rounded-2xl text-gray-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-transparent transition-all cursor-pointer"
+                className="w-full bg-transparent text-gray-900 dark:text-white text-sm font-semibold focus:outline-none cursor-pointer"
               />
             </div>
           </div>
 
           {/* Guests */}
-          <div className="relative">
-            <label className="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-1">
-              Guests
-            </label>
-            <button
-              onClick={() => setShowGuests(!showGuests)}
-              className="w-full flex items-center gap-2 pl-11 pr-4 py-3.5 bg-gray-50 dark:bg-white/5 border border-transparent hover:border-gray-200 dark:hover:border-white/10 rounded-2xl text-gray-900 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gold-500/50 transition-all text-left"
-            >
-              <Users className="absolute left-4 w-4 h-4 text-gold-500" />
-              {adults} Adult{adults !== 1 ? "s" : ""}{children > 0 ? `, ${children} Child${children !== 1 ? "ren" : ""}` : ""}
-            </button>
+          <div className="w-full md:flex-1 relative cursor-pointer px-4 md:px-8 py-3">
+            <div onClick={() => setShowGuests(!showGuests)} className="w-full">
+              <label className="block text-[10px] md:text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1 cursor-pointer">
+                Guests
+              </label>
+              <div className="flex items-center gap-3">
+                <Users className="w-4 h-4 text-gold-500" />
+                <span className="text-gray-900 dark:text-white text-sm font-semibold truncate">
+                  {adults} Adult{adults !== 1 ? "s" : ""}{children > 0 ? `, ${children} Child${children !== 1 ? "ren" : ""}` : ""}
+                </span>
+              </div>
+            </div>
 
             {showGuests && (
-              <div className="absolute top-full left-0 right-0 mt-3 bg-white dark:bg-[#1a1a1a] border border-gray-100 dark:border-white/10 rounded-2xl p-5 z-50 shadow-2xl">
+              <div className="absolute top-full left-0 md:left-auto md:right-0 mt-4 md:mt-6 w-full md:w-80 bg-white dark:bg-[#1a1a1a] border border-gray-100 dark:border-white/10 rounded-3xl p-6 z-50 shadow-2xl">
                 {[
                   { label: "Adults", value: adults, min: 1, max: 10, onChange: setAdults },
                   { label: "Children", value: children, min: 0, max: 6, onChange: setChildren },
                 ].map(({ label, value, min, max, onChange }) => (
-                  <div key={label} className="flex items-center justify-between mb-4 last:mb-0">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>
+                  <div key={label} className="flex items-center justify-between mb-5 last:mb-0">
+                    <span className="text-base font-medium text-gray-700 dark:text-gray-300">{label}</span>
                     <div className="flex items-center gap-4">
                       <button
                         onClick={() => onChange(Math.max(min, value - 1))}
-                        className="w-8 h-8 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gold-500 hover:text-white hover:border-gold-500 transition-all"
+                        className="w-10 h-10 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gold-500 hover:text-white hover:border-gold-500 transition-all"
                       >
-                        <Minus className="w-3 h-3" />
+                        <Minus className="w-4 h-4" />
                       </button>
-                      <span className="text-gray-900 dark:text-white w-4 text-center text-sm font-bold">{value}</span>
+                      <span className="text-gray-900 dark:text-white w-5 text-center text-base font-bold">{value}</span>
                       <button
                         onClick={() => onChange(Math.min(max, value + 1))}
-                        className="w-8 h-8 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gold-500 hover:text-white hover:border-gold-500 transition-all"
+                        className="w-10 h-10 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gold-500 hover:text-white hover:border-gold-500 transition-all"
                       >
-                        <Plus className="w-3 h-3" />
+                        <Plus className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -116,10 +109,13 @@ export function BookingWidget() {
           </div>
 
           {/* Search Button */}
-          <div className="flex flex-col justify-end">
-            <button onClick={handleSearch} className="w-full bg-gold-500 hover:bg-gold-600 text-white font-medium py-3.5 rounded-2xl transition-all shadow-lg shadow-gold-500/20 hover:shadow-xl hover:shadow-gold-500/30 flex justify-center items-center gap-2 transform hover:-translate-y-0.5">
-              <Search className="w-4 h-4" />
-              Search Rooms
+          <div className="w-full md:w-auto p-2">
+            <button 
+              onClick={handleSearch} 
+              className="w-full md:w-auto h-14 md:h-16 px-8 bg-gold-500 hover:bg-gold-600 text-white font-medium rounded-2xl md:rounded-full transition-all shadow-lg shadow-gold-500/20 hover:shadow-xl hover:shadow-gold-500/30 flex justify-center items-center gap-2 transform hover:-translate-y-0.5"
+            >
+              <Search className="w-5 h-5" />
+              <span className="md:hidden lg:block whitespace-nowrap">Search Rooms</span>
             </button>
           </div>
         </div>
