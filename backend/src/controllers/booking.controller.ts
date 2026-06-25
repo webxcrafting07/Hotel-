@@ -340,7 +340,8 @@ export async function getGroupBooking(req: AuthRequest, res: Response, next: Nex
       }
     }
 
-    const primaryBooking = bookings[0];
+    // Ensure we find the booking that has the invoice attached
+    const primaryBooking = bookings.find((b) => b.invoice) || bookings[0];
     const totalAmount = bookings.reduce((sum, b) => sum + parseFloat(b.totalAmount.toString()), 0);
     const paidAmount = bookings.reduce((sum, b) => sum + parseFloat(b.paidAmount.toString()), 0);
     const roomsCount = bookings.length;

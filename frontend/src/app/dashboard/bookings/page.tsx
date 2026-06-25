@@ -133,13 +133,13 @@ export default function BookingsPage() {
                       <button onClick={(e) => { e.preventDefault(); router.push(`/dashboard/invoices/${item.id}`) }} className="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-gray-200 dark:border-white/10 rounded-lg hover:border-gold-500 text-gray-600 dark:text-gray-300 transition-colors">
                         <FileText className="w-3.5 h-3.5" /> Invoice
                       </button>
-                    ) : (item.isGroup && item.bookings?.[0]?.invoice) ? (
+                    ) : (item.isGroup && item.bookings?.some((b: any) => b.invoice)) ? (
                       <button onClick={(e) => { e.preventDefault(); router.push(`/dashboard/invoices/group/${item.groupId}`) }} className="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-gray-200 dark:border-white/10 rounded-lg hover:border-gold-500 text-gray-600 dark:text-gray-300 transition-colors">
                         <FileText className="w-3.5 h-3.5" /> Invoice
                       </button>
                     ) : null}
                     
-                    {(!item.isGroup && item.qrCode) || (item.isGroup && item.bookings?.[0]?.qrCode) ? (
+                    {(!item.isGroup && item.qrCode) || (item.isGroup && item.bookings?.some((b: any) => b.qrCode)) ? (
                       <button onClick={(e) => e.preventDefault()} className="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-gray-200 dark:border-white/10 rounded-lg hover:border-gold-500 text-gray-600 dark:text-gray-300 transition-colors">
                         <QrCode className="w-3.5 h-3.5" /> QR
                       </button>
