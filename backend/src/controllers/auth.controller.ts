@@ -14,8 +14,7 @@ const googleClient = new OAuth2Client(ENV.GOOGLE_CLIENT_ID);
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: ENV.NODE_ENV === 'production',
-  sameSite: 'strict' as const,
-  domain: ENV.NODE_ENV === 'production' ? '.hotelanand.com' : undefined,
+  sameSite: ENV.NODE_ENV === 'production' ? 'none' as const : 'lax' as const,
 };
 
 export async function register(req: Request, res: Response, next: NextFunction): Promise<void> {
