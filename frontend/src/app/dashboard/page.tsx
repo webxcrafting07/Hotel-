@@ -11,7 +11,7 @@ import { formatCurrency, formatDate } from "@/lib/utils"
 export default function DashboardPage() {
   const { user } = useAuthStore()
 
-  const { data: bookings } = useQuery({
+  const { data: bookings, isLoading: isLoadingBookings } = useQuery({
     queryKey: ["user-bookings"],
     queryFn: async () => {
       const res = await api.get("/bookings?limit=5")
@@ -19,7 +19,7 @@ export default function DashboardPage() {
     },
   })
 
-  const { data: availableRooms } = useQuery({
+  const { data: availableRooms, isLoading: isLoadingRooms } = useQuery({
     queryKey: ["available-rooms"],
     queryFn: async () => {
       const res = await api.get("/rooms?status=AVAILABLE&limit=3")
@@ -89,7 +89,9 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {!bookings?.length ? (
+        {!bookings && isLoadingBookings ? (
+          <p className="text-gray-500 dark:text-gray-400">Loading your bookings...</p>
+        ) : !bookings?.length ? (
           <div className="text-center py-12">
             <Calendar className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
             <p className="text-gray-500 dark:text-gray-400 mb-4">No bookings yet</p>
@@ -143,8 +145,10 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {!availableRooms?.length ? (
+        {!availableRooms && isLoadingRooms ? (
           <p className="text-gray-500 dark:text-gray-400">Loading available rooms...</p>
+        ) : !availableRooms?.length ? (
+          <p className="text-gray-500 dark:text-gray-400">No rooms available at the moment.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {availableRooms.map((room) => (
