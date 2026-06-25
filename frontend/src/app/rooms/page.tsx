@@ -136,31 +136,38 @@ function RoomsContent() {
               </div>
 
               {showGuests && (
-                <div className="absolute top-[calc(100%+0.5rem)] left-0 w-full min-w-[250px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gold-500/30 rounded-xl p-4 shadow-xl z-50">
-                  {[
-                    { label: "Adults", value: adults, min: 1, max: 10, onChange: setAdults },
-                    { label: "Children", value: children, min: 0, max: 6, onChange: setChildren },
-                  ].map(({ label, value, min, max, onChange }) => (
-                    <div key={label} className="flex items-center justify-between mb-4 last:mb-0">
-                      <span className="text-sm font-medium text-gray-900 dark:text-white">{label}</span>
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={(e) => { e.stopPropagation(); onChange(Math.max(min, value - 1)); }}
-                          className="w-8 h-8 rounded-full border border-gray-200 dark:border-gold-500/50 flex items-center justify-center text-gray-500 dark:text-gold-500 hover:bg-gold-50 dark:hover:bg-gold-500 hover:text-gold-600 dark:hover:text-white transition-colors"
-                        >
-                          <Minus className="w-3 h-3" />
-                        </button>
-                        <span className="text-gray-900 dark:text-white w-4 text-center text-sm font-semibold">{value}</span>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); onChange(Math.min(max, value + 1)); }}
-                          className="w-8 h-8 rounded-full border border-gray-200 dark:border-gold-500/50 flex items-center justify-center text-gray-500 dark:text-gold-500 hover:bg-gold-50 dark:hover:bg-gold-500 hover:text-gold-600 dark:hover:text-white transition-colors"
-                        >
-                          <Plus className="w-3 h-3" />
-                        </button>
+                <>
+                  {/* Invisible full-screen overlay to catch outside clicks */}
+                  <div 
+                    className="fixed inset-0 z-40"
+                    onClick={() => setShowGuests(false)}
+                  />
+                  <div className="absolute top-[calc(100%+0.5rem)] left-0 w-full min-w-[250px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gold-500/30 rounded-xl p-4 shadow-xl z-50">
+                    {[
+                      { label: "Adults", value: adults, min: 1, max: 10, onChange: setAdults },
+                      { label: "Children", value: children, min: 0, max: 6, onChange: setChildren },
+                    ].map(({ label, value, min, max, onChange }) => (
+                      <div key={label} className="flex items-center justify-between mb-4 last:mb-0">
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">{label}</span>
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); onChange(Math.max(min, value - 1)); }}
+                            className="w-8 h-8 rounded-full border border-gray-200 dark:border-gold-500/50 flex items-center justify-center text-gray-500 dark:text-gold-500 hover:bg-gold-50 dark:hover:bg-gold-500 hover:text-gold-600 dark:hover:text-white transition-colors"
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <span className="text-gray-900 dark:text-white w-4 text-center text-sm font-semibold">{value}</span>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); onChange(Math.min(max, value + 1)); }}
+                            className="w-8 h-8 rounded-full border border-gray-200 dark:border-gold-500/50 flex items-center justify-center text-gray-500 dark:text-gold-500 hover:bg-gold-50 dark:hover:bg-gold-500 hover:text-gold-600 dark:hover:text-white transition-colors"
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
           </div>
