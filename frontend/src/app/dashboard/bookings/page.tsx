@@ -6,6 +6,7 @@ import { Calendar, XCircle, FileText, QrCode } from "lucide-react"
 import api from "@/lib/api"
 import { Booking } from "@/types"
 import { formatCurrency, formatDate } from "@/lib/utils"
+import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 
 const STATUS_COLORS: Record<string, string> = {
@@ -17,6 +18,7 @@ const STATUS_COLORS: Record<string, string> = {
 }
 
 export default function BookingsPage() {
+  const router = useRouter()
   const qc = useQueryClient()
   const { data, isLoading } = useQuery({
     queryKey: ["my-bookings"],
