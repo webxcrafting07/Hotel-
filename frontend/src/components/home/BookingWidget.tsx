@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Calendar, Users, Search, Minus, Plus } from "lucide-react"
@@ -10,6 +10,17 @@ export function BookingWidget() {
   const router = useRouter()
   const { checkIn, checkOut, adults, children, setCheckIn, setCheckOut, setAdults, setChildren } = useBookingStore()
   const [showGuests, setShowGuests] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowGuests(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
 
   const handleSearch = () => {
     const params = new URLSearchParams()
@@ -66,7 +77,7 @@ export function BookingWidget() {
           </div>
 
           {/* Guests */}
-          <div className="w-full md:flex-1 relative cursor-pointer px-4 md:px-8 py-3">
+          <div className="w-full md:flex-1 relative cursor-pointer px-4 md:px-8 py-3" ref={dropdownRef}>
             <div onClick={() => setShowGuests(!showGuests)} className="w-full">
               <label className="block text-[10px] md:text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1 cursor-pointer">
                 Guests
