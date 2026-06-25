@@ -92,10 +92,10 @@ export default function RoomDetailPage() {
                 <span className="bg-gold-500/10 text-gold-600 dark:text-gold-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                   {room.roomType.replace("_", " ")}
                 </span>
-                {room.avgRating > 0 && (
+                {(room.avgRating ?? 0) > 0 && (
                   <div className="flex items-center gap-1 text-sm font-semibold text-gray-700 dark:text-gray-300">
                     <Star className="w-4 h-4 fill-gold-400 text-gold-400" />
-                    {room.avgRating.toFixed(1)} <span className="text-gray-400 font-normal">({room.reviewCount} reviews)</span>
+                    {room.avgRating?.toFixed(1)} <span className="text-gray-400 font-normal">({room.reviewCount} reviews)</span>
                   </div>
                 )}
               </div>
