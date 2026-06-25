@@ -41,12 +41,11 @@ function RoomsContent() {
     <MainLayout>
       {/* Hero Section */}
       <section className="relative pt-40 pb-24 flex flex-col items-center justify-center overflow-hidden">
-        <Image 
-          src="https://images.unsplash.com/photo-1542314831-c53cd4b85ca4?w=1600&q=80" 
-          alt="Luxury Rooms" 
-          fill 
-          className="object-cover"
-          priority
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url('/images/welcome/bed.png')`,
+          }}
         />
         <div className="absolute inset-0 bg-black/60" />
         <div className="relative z-10 text-center text-white px-4 w-full">
