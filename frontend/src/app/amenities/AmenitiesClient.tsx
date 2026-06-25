@@ -34,22 +34,39 @@ const amenityGroups = [
 
 export default function AmenitiesClient() {
   return (
-    <div className="container-custom space-y-16">
+    <div className="container-custom space-y-24">
       {amenityGroups.map((group, gi) => (
-        <div key={group.title}>
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-8">
-            <h2 className="font-serif text-2xl font-bold text-gray-900 dark:text-white mb-2">{group.title}</h2>
-            <div className="w-12 h-0.5 bg-gold-500" />
+        <div key={group.title} className="relative">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true }} 
+            className="flex flex-col items-center text-center mb-16"
+          >
+            <span className="text-gold-500 text-xs font-bold tracking-[0.2em] uppercase mb-3">0{gi + 1}</span>
+            <h2 className="font-serif text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">{group.title}</h2>
+            <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-gold-500 to-transparent" />
           </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {group.items.map((item, i) => (
-              <motion.div key={item.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                className="luxury-card p-8 text-center group border border-transparent hover:border-gold-500/30 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300">
-                <div className="w-14 h-14 rounded-2xl bg-gold-100 dark:bg-gold-500/10 flex items-center justify-center mx-auto mb-4 group-hover:bg-gold-500 transition-colors duration-300">
-                  <item.icon className="w-6 h-6 text-gold-500 group-hover:text-white transition-colors duration-300" />
+              <motion.div 
+                key={item.name} 
+                initial={{ opacity: 0, y: 30 }} 
+                whileInView={{ opacity: 1, y: 0 }} 
+                viewport={{ once: true }} 
+                transition={{ delay: i * 0.1, duration: 0.6 }}
+                className="bg-white dark:bg-[#0a0a0a] rounded-3xl p-8 border border-gray-100 dark:border-white/5 shadow-lg shadow-black/[0.03] dark:shadow-none lg:hover:-translate-y-2 lg:hover:shadow-2xl lg:hover:border-gold-500/30 transition-all duration-500 group flex flex-col items-center text-center"
+              >
+                <div className="w-16 h-16 rounded-full bg-gold-50 dark:bg-white/5 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-gold-500 transition-all duration-500">
+                  <item.icon className="w-7 h-7 text-gold-500 group-hover:text-white transition-colors duration-500" />
                 </div>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{item.name}</h3>
-                <p className="text-gray-500 dark:text-gray-400 text-sm">{item.desc}</p>
+                <h3 className="font-serif text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-gold-500 transition-colors duration-300">
+                  {item.name}
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
+                  {item.desc}
+                </p>
               </motion.div>
             ))}
           </div>
