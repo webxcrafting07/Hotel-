@@ -196,6 +196,7 @@ model RoomAmenity {
 model Booking {
   id              String        @id @default(uuid())
   bookingNumber   String        @unique
+  groupId         String?       
   userId          String
   roomId          String
   checkIn         DateTime
@@ -237,6 +238,7 @@ model Booking {
   payments        Payment[]
   invoice         Invoice?
 
+  @@index([groupId])
   @@map("bookings")
 }
 

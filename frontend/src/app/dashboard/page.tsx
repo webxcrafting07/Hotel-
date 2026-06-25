@@ -99,36 +99,62 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            {bookings.slice(0, 5).map((booking) => (
+            {Object.values(
+              (bookings || []).reduce((acc: any, booking: any) => {
+                if (booking.groupId) {
+                  if (!acc[booking.groupId]) {
+                    acc[booking.groupId] = {
+                      isGroup: true,
+                      id: booking.groupId,
+                      groupId: booking.groupId,
+                      roomsCount: 0,
+                      totalAmount: 0,
+                      status: booking.status,
+                      checkIn: booking.checkIn,
+                      checkOut: booking.checkOut,
+                      bookingNumber: booking.bookingNumber,
+                      nights: booking.nights,
+                      bookings: [],
+                    }
+                  }
+                  acc[booking.groupId].roomsCount += 1
+                  acc[booking.groupId].totalAmount += parseFloat(booking.totalAmount)
+                  acc[booking.groupId].bookings.push(booking)
+                } else {
+                  acc[booking.id] = { isGroup: false, ...booking, totalAmount: parseFloat(booking.totalAmount) }
+                }
+                return acc
+              }, {})
+            ).slice(0, 5).map((item: any) => (
               <Link
-                key={booking.id}
-                href={`/dashboard/bookings/${booking.id}`}
+                key={item.id}
+                href={item.isGroup ? `/dashboard/bookings?group=${item.groupId}` : `/dashboard/bookings/${item.id}`}
                 className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 dark:border-white/5 hover:border-gold-500/30 hover:bg-gold-50/30 dark:hover:bg-gold-500/5 transition-all group"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <p className="font-medium text-gray-900 dark:text-white text-sm truncate">
-                      {booking.room?.name || "Room Booking"}
+                      {item.isGroup ? `${item.roomsCount} Rooms Group Booking` : item.room?.name || "Room Booking"}
                     </p>
                     <span className={`shrink-0 text-xs px-2 py-0.5 rounded-full font-medium ${
-                      booking.status === "CONFIRMED" ? "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400" :
-                      booking.status === "PENDING" ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400" :
-                      booking.status === "CANCELLED" ? "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400" :
-                      booking.status === "CHECKED_OUT" ? "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400" :
+                      item.status === "CONFIRMED" ? "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400" :
+                      item.status === "PENDING" ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400" :
+                      item.status === "CANCELLED" ? "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400" :
+                      item.status === "CHECKED_OUT" ? "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400" :
                       "bg-gray-100 text-gray-700"
                     }`}>
-                      {booking.status}
+                      {item.status}
                     </span>
                   </div>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {formatDate(booking.checkIn)} – {formatDate(booking.checkOut)} · {booking.nights} night{booking.nights > 1 ? "s" : ""}
+                    {formatDate(item.checkIn)} – {formatDate(item.checkOut)} · {item.nights} night{item.nights > 1 ? "s" : ""}
                   </p>
                 </div>
                 <div className="text-right shrink-0">
                   <p className="font-semibold text-gray-900 dark:text-white text-sm">
-                    {formatCurrency(booking.totalAmount)}
+                    {formatCurrency(item.totalAmount)}
                   </p>
-                  <p className="text-xs text-gray-400">{booking.bookingNumber}</p>
+                  <p className="text-xs text-gray-400">{item.isGroup ? "Group Booking" : item.bookingNumber}</p>
                 </div>
               </Link>
             ))}

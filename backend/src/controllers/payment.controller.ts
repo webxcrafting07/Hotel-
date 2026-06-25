@@ -16,16 +16,27 @@ const stripe = new Stripe(ENV.STRIPE_SECRET_KEY);
 
 export async function createRazorpayOrder(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { bookingId, amount } = req.body;
+    const { bookingId, groupId, amount } = req.body;
 
-    const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
-    if (!booking) throw new AppError('Booking not found', 404);
+    let receiptId = '';
+
+    if (groupId) {
+      const bookings = await prisma.booking.findMany({ where: { groupId } });
+      if (!bookings.length) throw new AppError('Bookings not found for group', 404);
+      receiptId = `grp_${groupId.slice(0, 8)}`;
+    } else if (bookingId) {
+      const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+      if (!booking) throw new AppError('Booking not found', 404);
+      receiptId = booking.bookingNumber;
+    } else {
+      throw new AppError('Either bookingId or groupId is required', 400);
+    }
 
     const order = await razorpay.orders.create({
       amount: Math.round(amount * 100), // paise
       currency: 'INR',
-      receipt: booking.bookingNumber,
-      notes: { bookingId },
+      receipt: receiptId,
+      notes: { bookingId, groupId },
     });
 
     res.json({ success: true, data: { orderId: order.id, amount: order.amount, currency: order.currency, keyId: ENV.RAZORPAY_KEY_ID } });
@@ -36,7 +47,7 @@ export async function createRazorpayOrder(req: AuthRequest, res: Response, next:
 
 export async function verifyRazorpayPayment(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, bookingId } = req.body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, bookingId, groupId } = req.body;
 
     const expectedSignature = crypto
       .createHmac('sha256', ENV.RAZORPAY_KEY_SECRET)
@@ -50,9 +61,14 @@ export async function verifyRazorpayPayment(req: AuthRequest, res: Response, nex
     const paymentDetails = await razorpay.payments.fetch(razorpay_payment_id);
     const amount = (paymentDetails.amount as number) / 100;
 
+    // Create a single payment record linked to the primary booking or distribute it
+    const targetBookingId = bookingId || (await prisma.booking.findFirst({ where: { groupId } }))?.id;
+
+    if (!targetBookingId) throw new AppError('Booking reference not found', 404);
+
     const payment = await prisma.payment.create({
       data: {
-        bookingId,
+        bookingId: targetBookingId,
         amount,
         currency: 'INR',
         method: 'RAZORPAY',
@@ -64,20 +80,31 @@ export async function verifyRazorpayPayment(req: AuthRequest, res: Response, nex
       },
     });
 
-    // Update booking payment status
-    const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
-    if (booking) {
-      const newPaidAmount = parseFloat(booking.paidAmount.toString()) + amount;
-      const isPaid = newPaidAmount >= parseFloat(booking.totalAmount.toString());
-
-      await prisma.booking.update({
-        where: { id: bookingId },
+    if (groupId) {
+      // Update all bookings in the group
+      await prisma.booking.updateMany({
+        where: { groupId },
         data: {
-          paidAmount: newPaidAmount,
-          paymentStatus: isPaid ? 'PAID' : 'PARTIAL',
+          paymentStatus: 'PAID',
           status: 'CONFIRMED',
         },
       });
+      // We could also distribute the paidAmount, but paymentStatus='PAID' is enough
+    } else if (bookingId) {
+      const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+      if (booking) {
+        const newPaidAmount = parseFloat(booking.paidAmount.toString()) + amount;
+        const isPaid = newPaidAmount >= parseFloat(booking.totalAmount.toString());
+
+        await prisma.booking.update({
+          where: { id: bookingId },
+          data: {
+            paidAmount: newPaidAmount,
+            paymentStatus: isPaid ? 'PAID' : 'PARTIAL',
+            status: 'CONFIRMED',
+          },
+        });
+      }
     }
 
     res.json({ success: true, data: payment, message: 'Payment verified successfully' });

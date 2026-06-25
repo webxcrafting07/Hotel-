@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {
   createBooking, getBookings, getBooking, cancelBooking,
-  checkIn, checkOut, getTodaysActivity, createOfflineBooking, sendInvoiceEmail
+  checkIn, checkOut, getTodaysActivity, createOfflineBooking, sendInvoiceEmail, createGroupBooking
 } from '../controllers/booking.controller';
 import { authenticate, authorize } from '../middleware/auth';
 import { bookingLimiter } from '../middleware/rateLimiter';
@@ -14,6 +14,7 @@ const router = Router();
 router.use(authenticate);
 
 router.post('/', bookingLimiter, validate(createBookingSchema), createBooking);
+router.post('/group', bookingLimiter, createGroupBooking);
 router.post('/offline', authorize('SUPER_ADMIN', 'MANAGER', 'RECEPTIONIST'), upload.single('idProof'), validate(offlineBookingSchema), createOfflineBooking);
 router.get('/', getBookings);
 router.get('/today', authorize('SUPER_ADMIN', 'MANAGER', 'RECEPTIONIST'), getTodaysActivity);

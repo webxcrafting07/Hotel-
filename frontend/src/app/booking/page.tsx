@@ -121,35 +121,32 @@ function BookingCheckoutContent() {
     setIsSubmitting(true)
 
     try {
-      // Book primary room
-      await api.post("/bookings", {
-        roomId,
-        checkIn,
-        checkOut,
-        adults: adultsParam,
-        children: childrenParam,
+      const roomsToBook = [
+        {
+          roomId,
+          checkIn,
+          checkOut,
+          adults: adultsParam,
+          children: childrenParam,
+        },
+        ...additionalRooms.map((addRoom) => ({
+          roomId: addRoom.room.id,
+          checkIn,
+          checkOut,
+          adults: addRoom.adults,
+          children: addRoom.children,
+        }))
+      ]
+
+      await api.post("/bookings/group", {
+        rooms: roomsToBook,
         guestName: data.guestName,
         guestEmail: data.guestEmail,
         guestPhone: data.guestPhone,
         specialRequests: data.specialRequests,
       })
 
-      // Book additional rooms
-      for (const addRoom of additionalRooms) {
-        await api.post("/bookings", {
-          roomId: addRoom.room.id,
-          checkIn,
-          checkOut,
-          adults: addRoom.adults,
-          children: addRoom.children,
-          guestName: data.guestName,
-          guestEmail: data.guestEmail,
-          guestPhone: data.guestPhone,
-          specialRequests: data.specialRequests,
-        })
-      }
-
-      const totalRooms = 1 + additionalRooms.length
+      const totalRooms = roomsToBook.length
       toast.success(`${totalRooms} room${totalRooms > 1 ? "s" : ""} booked successfully!`)
       router.push("/dashboard")
     } catch (error: any) {

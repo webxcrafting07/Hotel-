@@ -150,6 +150,127 @@ export async function createBooking(req: AuthRequest, res: Response, next: NextF
   }
 }
 
+import { v4 as uuidv4 } from 'uuid';
+
+export async function createGroupBooking(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { rooms, guestName, guestEmail, guestPhone, specialRequests } = req.body;
+    const userId = req.user!.userId;
+    const groupId = uuidv4();
+
+    if (!Array.isArray(rooms) || rooms.length === 0) {
+      throw new AppError('No rooms provided for booking', 400);
+    }
+
+    const createdBookings = [];
+    let groupTotalAmount = 0;
+    let groupTaxAmount = 0;
+
+    for (const roomData of rooms) {
+      const { roomId, checkIn, checkOut, adults, children, extraBeds = 0 } = roomData;
+      const checkInDate = new Date(checkIn);
+      const checkOutDate = new Date(checkOut);
+      const nights = calculateNights(checkInDate, checkOutDate);
+
+      if (nights < 1) throw new AppError('Invalid dates: check-out must be after check-in', 400);
+
+      // Check availability
+      const conflict = await prisma.booking.findFirst({
+        where: {
+          roomId,
+          status: { notIn: ['CANCELLED', 'NO_SHOW'] },
+          checkIn: { lt: checkOutDate },
+          checkOut: { gt: checkInDate },
+        },
+      });
+      if (conflict) throw new AppError(`Room ${roomId} is not available for selected dates`, 409);
+
+      const room = await prisma.room.findUnique({ where: { id: roomId } });
+      if (!room) throw new AppError(`Room ${roomId} not found`, 404);
+
+      const roomPricePerNight = isWeekend(checkInDate)
+        ? parseFloat(room.weekendPrice.toString())
+        : parseFloat(room.pricePerNight.toString());
+
+      const extraBedPrice = extraBeds * 500;
+      const baseAmount = roomPricePerNight * nights + extraBedPrice * nights;
+      const gstCalc = calculateGST(roomPricePerNight, nights);
+
+      const totalAmount = gstCalc.total + extraBedPrice * nights;
+      const bookingNumber = generateBookingNumber();
+
+      const booking = await prisma.booking.create({
+        data: {
+          bookingNumber,
+          groupId,
+          userId,
+          roomId,
+          checkIn: checkInDate,
+          checkOut: checkOutDate,
+          nights,
+          adults,
+          children,
+          extraBeds,
+          roomPrice: roomPricePerNight * nights,
+          extraBedPrice: extraBedPrice * nights,
+          taxAmount: gstCalc.cgst + gstCalc.sgst + gstCalc.igst,
+          discountAmount: 0,
+          totalAmount,
+          specialRequests,
+          guestName: guestName || req.user!.email,
+          guestEmail: guestEmail || req.user!.email,
+          guestPhone,
+        },
+        include: { room: true },
+      });
+
+      createdBookings.push(booking);
+      groupTotalAmount += totalAmount;
+      groupTaxAmount += gstCalc.cgst + gstCalc.sgst + gstCalc.igst;
+    }
+
+    // Create a single unified invoice for the first booking but with total group amount
+    // Ideally Invoice schema should support groupId, but we can attach it to the primary booking
+    const primaryBooking = createdBookings[0];
+    const invoiceNumber = generateInvoiceNumber();
+    const invoice = await prisma.invoice.create({
+      data: {
+        bookingId: primaryBooking.id,
+        invoiceNumber,
+        subtotal: groupTotalAmount - groupTaxAmount,
+        cgst: groupTaxAmount / 2, // approximation for unified invoice
+        sgst: groupTaxAmount / 2,
+        igst: 0,
+        total: groupTotalAmount,
+      },
+    });
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user) {
+      const bookingWithInvoice = { ...primaryBooking, invoice };
+      sendEmail({
+        to: user.email,
+        subject: `Group Booking Confirmed & Invoice - ${primaryBooking.bookingNumber} (+${createdBookings.length - 1} more)`,
+        html: invoiceTemplate(bookingWithInvoice), // This might need a custom group template later
+      }).catch(console.error);
+    }
+
+    await prisma.notification.create({
+      data: {
+        userId,
+        title: 'Group Booking Confirmed',
+        message: `Your group booking for ${createdBookings.length} rooms has been confirmed!`,
+        type: 'SUCCESS',
+        link: `/bookings`,
+      },
+    });
+
+    res.status(201).json({ success: true, data: { groupId, bookings: createdBookings, totalAmount: groupTotalAmount }, message: 'Group Booking created successfully' });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function getBookings(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
     const { page = '1', limit = '10', status } = req.query;
