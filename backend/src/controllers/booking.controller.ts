@@ -199,6 +199,9 @@ export async function createGroupBooking(req: AuthRequest, res: Response, next: 
       const totalAmount = gstCalc.total + extraBedPrice * nights;
       const bookingNumber = generateBookingNumber();
 
+      const qrData = JSON.stringify({ bookingNumber, roomId, checkIn: checkInDate, checkOut: checkOutDate });
+      const qrCode = await QRCode.toDataURL(qrData);
+
       const booking = await prisma.booking.create({
         data: {
           bookingNumber,
@@ -220,6 +223,7 @@ export async function createGroupBooking(req: AuthRequest, res: Response, next: 
           guestName: guestName || req.user!.email,
           guestEmail: guestEmail || req.user!.email,
           guestPhone,
+          qrCode,
         },
         include: { room: true },
       });
@@ -324,6 +328,17 @@ export async function getGroupBooking(req: AuthRequest, res: Response, next: Nex
     });
 
     if (!bookings.length) throw new AppError('Group booking not found', 404);
+
+    let updated = false;
+    for (const booking of bookings) {
+      if (!booking.qrCode) {
+        const qrData = JSON.stringify({ bookingNumber: booking.bookingNumber, roomId: booking.roomId, checkIn: booking.checkIn, checkOut: booking.checkOut });
+        const qrCode = await QRCode.toDataURL(qrData);
+        await prisma.booking.update({ where: { id: booking.id }, data: { qrCode } });
+        booking.qrCode = qrCode;
+        updated = true;
+      }
+    }
 
     const primaryBooking = bookings[0];
     const totalAmount = bookings.reduce((sum, b) => sum + parseFloat(b.totalAmount.toString()), 0);

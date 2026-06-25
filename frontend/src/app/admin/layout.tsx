@@ -4,7 +4,7 @@ import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
 import {
   LayoutDashboard, Bed, CalendarCheck, Users, Image, FileText,
-  BarChart3, Sparkles, UtensilsCrossed, Home, Settings, LogOut, Menu, X, ChevronDown
+  BarChart3, Sparkles, UtensilsCrossed, Home, Settings, LogOut, Menu, X, ChevronDown, QrCode
 } from "lucide-react"
 import { useAuthStore } from "@/store/auth.store"
 import { cn } from "@/lib/utils"
@@ -24,6 +24,7 @@ const navGroups = [
     items: [
       { href: "/admin/rooms", label: "Rooms", icon: Bed, roles: ["SUPER_ADMIN", "MANAGER"] },
       { href: "/admin/bookings", label: "Bookings", icon: CalendarCheck, roles: ["SUPER_ADMIN", "MANAGER", "RECEPTIONIST", "ACCOUNTANT"] },
+      { href: "/admin/scan", label: "Scan QR", icon: QrCode, roles: ["SUPER_ADMIN", "MANAGER", "RECEPTIONIST"] },
       { href: "/admin/housekeeping", label: "Housekeeping", icon: Home, roles: ["SUPER_ADMIN", "MANAGER", "HOUSEKEEPING", "RECEPTIONIST"] },
     ],
   },

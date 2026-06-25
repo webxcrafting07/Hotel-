@@ -215,6 +215,35 @@ export default function GroupBookingDetailsPage() {
             )}
           </div>
           
+          {group.bookings.some((b: any) => b.qrCode) && (
+            <div className="luxury-card p-6">
+              <h2 className="font-serif text-lg font-semibold text-gray-900 dark:text-white mb-4">Check-in QR Codes</h2>
+              <div className="space-y-4">
+                {group.bookings.map((b: any, index: number) => b.qrCode ? (
+                  <div key={b.id} className="flex items-center justify-between p-3 border border-gray-100 dark:border-white/5 rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                    onClick={() => {
+                       const modal = document.createElement('div');
+                       modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4';
+                       modal.onclick = () => document.body.removeChild(modal);
+                       const img = document.createElement('img');
+                       img.src = b.qrCode;
+                       img.className = 'w-full max-w-md bg-white p-4 rounded-2xl';
+                       modal.appendChild(img);
+                       document.body.appendChild(modal);
+                    }}
+                  >
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white">Room {index + 1}</p>
+                      <p className="text-xs text-gray-500 mt-1">#{b.bookingNumber}</p>
+                    </div>
+                    <img src={b.qrCode} alt="QR" className="w-16 h-16 bg-white p-1 rounded-lg" />
+                  </div>
+                ) : null)}
+              </div>
+              <p className="text-xs text-gray-500 mt-4 text-center">Click a QR code to enlarge. Show at reception for check-in.</p>
+            </div>
+          )}
+
           <button 
             disabled={!group.invoice}
             onClick={() => {
