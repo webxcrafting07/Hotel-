@@ -39,13 +39,13 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  const isHome = pathname === "/"
+  const isTransparentPage = pathname === "/" || pathname === "/rooms" || pathname.startsWith("/rooms/")
 
   return (
     <nav
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
-        scrolled || !isHome
+        scrolled || !isTransparentPage
           ? "bg-white/95 dark:bg-luxury-dark/95 backdrop-blur-md shadow-lg border-b border-gold-500/10"
           : "bg-transparent"
       )}
@@ -57,7 +57,7 @@ export function Navbar() {
             <span
               className={cn(
                 "font-serif text-xl font-bold tracking-widest transition-colors duration-300",
-                scrolled || !isHome ? "text-gray-900 dark:text-white" : "text-white"
+                scrolled || !isTransparentPage ? "text-gray-900 dark:text-white" : "text-white"
               )}
             >
               HOTEL
@@ -80,7 +80,7 @@ export function Navbar() {
                   <button
                     className={cn(
                       "flex items-center gap-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200",
-                      scrolled || !isHome
+                      scrolled || !isTransparentPage
                         ? "text-gray-700 dark:text-gray-200 hover:text-gold-500"
                         : "text-white/90 hover:text-white"
                     )}
@@ -117,7 +117,7 @@ export function Navbar() {
                   className={cn(
                     "px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200",
                     pathname === link.href ? "text-gold-500" : "",
-                    scrolled || !isHome
+                    scrolled || !isTransparentPage
                       ? "text-gray-700 dark:text-gray-200 hover:text-gold-500"
                       : "text-white/90 hover:text-white"
                   )}
@@ -134,7 +134,7 @@ export function Navbar() {
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className={cn(
                 "p-2 rounded-full transition-colors",
-                scrolled || !isHome
+                scrolled || !isTransparentPage
                   ? "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                   : "text-white/80 hover:text-white hover:bg-white/10"
               )}
@@ -146,7 +146,7 @@ export function Navbar() {
               href="tel:+919296985454"
               className={cn(
                 "hidden md:flex items-center gap-2 text-sm font-medium transition-colors",
-                scrolled || !isHome ? "text-gray-700 dark:text-gray-200" : "text-white/90"
+                scrolled || !isTransparentPage ? "text-gray-700 dark:text-gray-200" : "text-white/90"
               )}
             >
               <Phone className="w-4 h-4 text-gold-500" />
@@ -159,7 +159,7 @@ export function Navbar() {
                   href="/dashboard/notifications"
                   className={cn(
                     "p-2 rounded-full transition-colors",
-                    scrolled || !isHome ? "text-gray-600 dark:text-gray-300" : "text-white/80"
+                    scrolled || !isTransparentPage ? "text-gray-600 dark:text-gray-300" : "text-white/80"
                   )}
                 >
                   <Bell className="w-4 h-4" />
@@ -168,7 +168,7 @@ export function Navbar() {
                   href={user?.role === "CUSTOMER" ? "/dashboard" : "/admin"}
                   className={cn(
                     "p-2 rounded-full transition-colors",
-                    scrolled || !isHome ? "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800" : "text-white/80 hover:text-white hover:bg-white/10"
+                    scrolled || !isTransparentPage ? "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800" : "text-white/80 hover:text-white hover:bg-white/10"
                   )}
                 >
                   <User className="w-4 h-4" />
@@ -179,7 +179,7 @@ export function Navbar() {
                 href="/login" 
                 className={cn(
                   "hidden md:inline-flex text-sm font-medium transition-colors mr-2",
-                  scrolled || !isHome ? "text-gray-700 hover:text-gold-500 dark:text-gray-200" : "text-white/90 hover:text-white"
+                  scrolled || !isTransparentPage ? "text-gray-700 hover:text-gold-500 dark:text-gray-200" : "text-white/90 hover:text-white"
                 )}
               >
                 Sign In
@@ -193,7 +193,7 @@ export function Navbar() {
             <button
               className={cn(
                 "lg:hidden p-2 rounded-lg",
-                scrolled || !isHome ? "text-gray-700 dark:text-gray-200" : "text-white"
+                scrolled || !isTransparentPage ? "text-gray-700 dark:text-gray-200" : "text-white"
               )}
               onClick={() => setIsOpen(!isOpen)}
             >

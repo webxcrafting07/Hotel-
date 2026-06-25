@@ -82,7 +82,7 @@ export default function RoomDetailPage() {
 
   return (
     <MainLayout>
-      <div className="pt-20">
+      <div className="relative">
         {/* Image Gallery */}
         <div className="relative h-[60vh] bg-gray-900 overflow-hidden">
           {images[activeImg]?.isVideo ? (
@@ -98,7 +98,7 @@ export default function RoomDetailPage() {
               className="object-cover w-full h-full"
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/60" />
 
           {/* Discount Badge */}
           {room.basePrice && room.basePrice > room.pricePerNight && (
