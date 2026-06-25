@@ -264,10 +264,10 @@ function RoomsContent() {
                     <h3 className="font-serif text-2xl font-bold text-gray-900 dark:text-white group-hover:text-gold-500 transition-colors">
                       {room.name}
                     </h3>
-                    {room.avgRating && (
+                    {(room.avgRating ?? 0) > 0 && (
                       <div className="flex items-center gap-1 text-sm font-semibold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-white/5 px-2 py-1 rounded-lg">
                         <Star className="w-3.5 h-3.5 fill-gold-400 text-gold-400" />
-                        {room.avgRating.toFixed(1)}
+                        {room.avgRating?.toFixed(1)}
                       </div>
                     )}
                   </div>

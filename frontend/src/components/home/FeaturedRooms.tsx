@@ -47,10 +47,10 @@ function RoomCard({ room, index }: { room: Room; index: number }) {
           <h3 className="font-serif text-lg font-semibold text-gray-900 dark:text-white">
             {room.name}
           </h3>
-          {room.avgRating && (
-            <div className="flex items-center gap-1 text-sm text-gray-500">
+          {(room.avgRating ?? 0) > 0 && (
+            <div className="flex items-center gap-1 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-xl shadow-sm">
               <Star className="w-3.5 h-3.5 fill-gold-400 text-gold-400" />
-              {room.avgRating.toFixed(1)}
+              <span className="text-sm font-bold text-gray-900">{room.avgRating?.toFixed(1)}</span>
             </div>
           )}
         </div>
