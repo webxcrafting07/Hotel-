@@ -5,6 +5,8 @@ import api from '@/lib/api'
 
 interface AuthState {
   user: User | null
+  accessToken: string | null
+  refreshToken: string | null
   isAuthenticated: boolean
   isLoading: boolean
   login: (email: string, password: string) => Promise<void>
@@ -12,20 +14,25 @@ interface AuthState {
   logout: () => Promise<void>
   fetchMe: () => Promise<void>
   updateUser: (user: Partial<User>) => void
+  setToken: (token: string) => void
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
+      accessToken: null,
+      refreshToken: null,
       isAuthenticated: false,
       isLoading: false,
+
+      setToken: (token) => set({ accessToken: token }),
 
       login: async (email, password) => {
         set({ isLoading: true })
         try {
           const { data } = await api.post('/auth/login', { email, password })
-          set({ user: data.data.user, isAuthenticated: true })
+          set({ user: data.data.user, accessToken: data.data.accessToken, refreshToken: data.data.refreshToken, isAuthenticated: true })
         } finally {
           set({ isLoading: false })
         }
@@ -35,7 +42,7 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true })
         try {
           const { data } = await api.post('/auth/google', { credential })
-          set({ user: data.data.user, isAuthenticated: true })
+          set({ user: data.data.user, accessToken: data.data.accessToken, refreshToken: data.data.refreshToken, isAuthenticated: true })
         } finally {
           set({ isLoading: false })
         }
@@ -45,7 +52,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           await api.post('/auth/logout')
         } catch {}
-        set({ user: null, isAuthenticated: false })
+        set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false })
       },
 
       fetchMe: async () => {
@@ -53,7 +60,7 @@ export const useAuthStore = create<AuthState>()(
           const { data } = await api.get('/auth/me')
           set({ user: data.data, isAuthenticated: true })
         } catch {
-          set({ user: null, isAuthenticated: false })
+          set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false })
         }
       },
 
@@ -64,7 +71,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'hotel-auth',
-      partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
+      partialize: (state) => ({ user: state.user, accessToken: state.accessToken, refreshToken: state.refreshToken, isAuthenticated: state.isAuthenticated }),
     }
   )
 )

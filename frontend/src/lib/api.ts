@@ -20,6 +20,16 @@ const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue = []
 }
 
+import { useAuthStore } from '@/store/auth.store'
+
+api.interceptors.request.use((config) => {
+  const token = useAuthStore.getState().accessToken
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -37,7 +47,14 @@ api.interceptors.response.use(
       isRefreshing = true
 
       try {
-        await axios.post(`${API_URL}/auth/refresh-token`, {}, { withCredentials: true })
+        const rToken = useAuthStore.getState().refreshToken
+        const resp = await axios.post(`${API_URL}/auth/refresh-token`, { refreshToken: rToken }, { withCredentials: true })
+        
+        if (resp.data?.data?.accessToken) {
+          useAuthStore.getState().setToken(resp.data.data.accessToken)
+          originalRequest.headers.Authorization = `Bearer ${resp.data.data.accessToken}`
+        }
+
         processQueue(null)
         return api(originalRequest)
       } catch (refreshError) {

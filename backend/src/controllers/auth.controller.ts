@@ -79,6 +79,7 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
       data: {
         user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role, avatar: user.avatar },
         accessToken,
+        refreshToken,
       },
     });
   } catch (error) {
@@ -142,6 +143,7 @@ export async function googleLogin(req: Request, res: Response, next: NextFunctio
       data: {
         user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role, avatar: user.avatar },
         accessToken,
+        refreshToken,
       },
     });
   } catch (error) {
@@ -151,7 +153,7 @@ export async function googleLogin(req: Request, res: Response, next: NextFunctio
 
 export async function refreshToken(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const token = req.cookies.refreshToken;
+    const token = req.body.refreshToken || req.cookies.refreshToken;
     if (!token) throw new AppError('No refresh token', 401);
 
     const payload = verifyRefreshToken(token);
