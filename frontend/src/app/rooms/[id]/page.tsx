@@ -92,7 +92,7 @@ export default function RoomDetailPage() {
                 <span className="bg-gold-500/10 text-gold-600 dark:text-gold-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                   {room.roomType.replace("_", " ")}
                 </span>
-                {room.avgRating && (
+                {room.avgRating > 0 && (
                   <div className="flex items-center gap-1 text-sm font-semibold text-gray-700 dark:text-gray-300">
                     <Star className="w-4 h-4 fill-gold-400 text-gold-400" />
                     {room.avgRating.toFixed(1)} <span className="text-gray-400 font-normal">({room.reviewCount} reviews)</span>
@@ -115,7 +115,7 @@ export default function RoomDetailPage() {
           </div>
 
           {/* Modern Image Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-[50vh] md:h-[60vh] mb-12 rounded-3xl overflow-hidden shadow-2xl shadow-black/5 relative">
+          <div className={`grid grid-cols-1 md:grid-cols-4 gap-4 mb-12 rounded-3xl overflow-hidden shadow-2xl shadow-black/5 relative ${images.length >= 3 ? "h-[50vh] md:h-[60vh]" : "h-[50vh] md:h-[60vh] bg-gray-100 dark:bg-gray-800"}`}>
             {images.length >= 3 ? (
               <>
                 <div className="md:col-span-2 md:row-span-2 relative group cursor-pointer" onClick={() => { setActiveImg(0); setShowGallery(true); }}>
@@ -138,8 +138,8 @@ export default function RoomDetailPage() {
                 </div>
               </>
             ) : (
-              <div className="md:col-span-4 relative group cursor-pointer" onClick={() => setShowGallery(true)}>
-                <img src={images[0].url} alt={room.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <div className="md:col-span-4 w-full h-full relative group cursor-pointer flex items-center justify-center" onClick={() => setShowGallery(true)}>
+                <img src={images[0].url} alt={room.name} className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105" />
               </div>
             )}
             
