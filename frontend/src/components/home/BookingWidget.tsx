@@ -1,5 +1,5 @@
 "use client"
-import { useState, useRef, useEffect } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Calendar, Users, Search, Minus, Plus } from "lucide-react"
@@ -10,21 +10,6 @@ export function BookingWidget() {
   const router = useRouter()
   const { checkIn, checkOut, adults, children, setCheckIn, setCheckOut, setAdults, setChildren } = useBookingStore()
   const [showGuests, setShowGuests] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent | TouchEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowGuests(false)
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside, true)
-    document.addEventListener("touchstart", handleClickOutside, true)
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside, true)
-      document.removeEventListener("touchstart", handleClickOutside, true)
-    }
-  }, [])
 
   const handleSearch = () => {
     const params = new URLSearchParams()
@@ -81,8 +66,8 @@ export function BookingWidget() {
           </div>
 
           {/* Guests */}
-          <div className="w-full md:flex-1 relative cursor-pointer px-4 md:px-8 py-3" ref={dropdownRef}>
-            <div onClick={() => setShowGuests(!showGuests)} className="w-full">
+          <div className="w-full md:flex-1 relative px-4 md:px-8 py-3">
+            <div onClick={() => setShowGuests(!showGuests)} className="w-full cursor-pointer">
               <label className="block text-[10px] md:text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1 cursor-pointer">
                 Guests
               </label>
@@ -95,31 +80,40 @@ export function BookingWidget() {
             </div>
 
             {showGuests && (
-              <div className="absolute top-full left-0 md:left-auto md:right-0 mt-4 md:mt-6 w-full md:w-80 bg-white dark:bg-[#1a1a1a] border border-gray-100 dark:border-white/10 rounded-3xl p-6 z-50 shadow-2xl">
-                {[
-                  { label: "Adults", value: adults, min: 1, max: 10, onChange: setAdults },
-                  { label: "Children", value: children, min: 0, max: 6, onChange: setChildren },
-                ].map(({ label, value, min, max, onChange }) => (
-                  <div key={label} className="flex items-center justify-between mb-5 last:mb-0">
-                    <span className="text-base font-medium text-gray-700 dark:text-gray-300">{label}</span>
-                    <div className="flex items-center gap-4">
-                      <button
-                        onClick={() => onChange(Math.max(min, value - 1))}
-                        className="w-10 h-10 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gold-500 hover:text-white hover:border-gold-500 transition-all"
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="text-gray-900 dark:text-white w-5 text-center text-base font-bold">{value}</span>
-                      <button
-                        onClick={() => onChange(Math.min(max, value + 1))}
-                        className="w-10 h-10 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gold-500 hover:text-white hover:border-gold-500 transition-all"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
+              <>
+                {/* Invisible full-screen overlay to catch outside clicks */}
+                <div 
+                  className="fixed inset-0 z-40"
+                  onClick={() => setShowGuests(false)}
+                />
+                
+                {/* Dropdown Menu */}
+                <div className="absolute top-full left-0 md:left-auto md:right-0 mt-4 md:mt-6 w-full md:w-80 bg-white dark:bg-[#1a1a1a] border border-gray-100 dark:border-white/10 rounded-3xl p-6 z-50 shadow-2xl">
+                  {[
+                    { label: "Adults", value: adults, min: 1, max: 10, onChange: setAdults },
+                    { label: "Children", value: children, min: 0, max: 6, onChange: setChildren },
+                  ].map(({ label, value, min, max, onChange }) => (
+                    <div key={label} className="flex items-center justify-between mb-5 last:mb-0">
+                      <span className="text-base font-medium text-gray-700 dark:text-gray-300">{label}</span>
+                      <div className="flex items-center gap-4">
+                        <button
+                          onClick={() => onChange(Math.max(min, value - 1))}
+                          className="w-10 h-10 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gold-500 hover:text-white hover:border-gold-500 transition-all"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </button>
+                        <span className="text-gray-900 dark:text-white w-5 text-center text-base font-bold">{value}</span>
+                        <button
+                          onClick={() => onChange(Math.min(max, value + 1))}
+                          className="w-10 h-10 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gold-500 hover:text-white hover:border-gold-500 transition-all"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </>
             )}
           </div>
 
