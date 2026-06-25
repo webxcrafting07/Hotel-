@@ -18,6 +18,7 @@ router.post('/group', bookingLimiter, createGroupBooking);
 router.post('/offline', authorize('SUPER_ADMIN', 'MANAGER', 'RECEPTIONIST'), upload.single('idProof'), validate(offlineBookingSchema), createOfflineBooking);
 router.get('/', getBookings);
 router.get('/today', authorize('SUPER_ADMIN', 'MANAGER', 'RECEPTIONIST'), getTodaysActivity);
+router.get('/group/:groupId', authenticate, getGroupBooking);
 router.get('/:id', getBooking);
 router.patch('/:id/cancel', cancelBooking);
 router.patch('/:id/check-in', authorize('SUPER_ADMIN', 'MANAGER', 'RECEPTIONIST'), upload.single('idProof'), checkIn);

@@ -128,7 +128,7 @@ export default function DashboardPage() {
             ).slice(0, 5).map((item: any) => (
               <Link
                 key={item.id}
-                href={item.isGroup ? `/dashboard/bookings?group=${item.groupId}` : `/dashboard/bookings/${item.id}`}
+                href={item.isGroup ? `/dashboard/bookings/group/${item.groupId}` : `/dashboard/bookings/${item.id}`}
                 className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 dark:border-white/5 hover:border-gold-500/30 hover:bg-gold-50/30 dark:hover:bg-gold-500/5 transition-all group"
               >
                 <div className="flex-1 min-w-0">

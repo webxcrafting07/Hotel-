@@ -309,6 +309,61 @@ export async function getBookings(req: AuthRequest, res: Response, next: NextFun
   }
 }
 
+export async function getGroupBooking(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { groupId } = req.params;
+    
+    const bookings = await prisma.booking.findMany({
+      where: { groupId },
+      include: {
+        room: { include: { images: true } },
+        user: { select: { firstName: true, lastName: true, email: true, phone: true } },
+        payments: true,
+        invoice: true,
+      },
+    });
+
+    if (!bookings.length) throw new AppError('Group booking not found', 404);
+
+    const primaryBooking = bookings[0];
+    const totalAmount = bookings.reduce((sum, b) => sum + parseFloat(b.totalAmount.toString()), 0);
+    const paidAmount = bookings.reduce((sum, b) => sum + parseFloat(b.paidAmount.toString()), 0);
+    const roomsCount = bookings.length;
+    
+    // Group status logic
+    const allPaid = bookings.every((b) => b.paymentStatus === 'PAID');
+    const paymentStatus = allPaid ? 'PAID' : (paidAmount > 0 ? 'PARTIAL' : 'PENDING');
+    
+    // Most severe status wins or all confirmed
+    const status = bookings.some((b) => b.status === 'CANCELLED') ? 'CANCELLED' 
+                 : bookings.every((b) => b.status === 'CONFIRMED') ? 'CONFIRMED'
+                 : primaryBooking.status;
+
+    res.json({
+      success: true,
+      data: {
+        id: groupId,
+        groupId,
+        bookingNumber: 'Group Booking',
+        status,
+        paymentStatus,
+        totalAmount,
+        paidAmount,
+        roomsCount,
+        checkIn: primaryBooking.checkIn,
+        checkOut: primaryBooking.checkOut,
+        guestName: primaryBooking.guestName,
+        guestEmail: primaryBooking.guestEmail,
+        guestPhone: primaryBooking.guestPhone,
+        invoice: primaryBooking.invoice,
+        bookings,
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function getBooking(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
     const { id } = req.params;

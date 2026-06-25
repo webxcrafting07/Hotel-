@@ -92,9 +92,10 @@ export default function BookingsPage() {
               return acc
             }, {})
           ).map((item: any, i: number) => (
-            <motion.div key={item.id}
-              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-              className="luxury-card p-6">
+            <Link key={item.id} href={item.isGroup ? `/dashboard/bookings/group/${item.groupId}` : `/dashboard/bookings/${item.id}`} className="block">
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                className="luxury-card p-6 hover:border-gold-500/30 transition-colors">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
@@ -127,20 +128,21 @@ export default function BookingsPage() {
                   </div>
                   <div className="flex gap-2">
                     {(!item.isGroup && item.invoice) || (item.isGroup && item.bookings?.[0]?.invoice) ? (
-                      <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-gray-200 dark:border-white/10 rounded-lg hover:border-gold-500 text-gray-600 dark:text-gray-300 transition-colors">
+                      <button onClick={(e) => e.preventDefault()} className="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-gray-200 dark:border-white/10 rounded-lg hover:border-gold-500 text-gray-600 dark:text-gray-300 transition-colors">
                         <FileText className="w-3.5 h-3.5" /> Invoice
                       </button>
                     ) : null}
                     
                     {(!item.isGroup && item.qrCode) || (item.isGroup && item.bookings?.[0]?.qrCode) ? (
-                      <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-gray-200 dark:border-white/10 rounded-lg hover:border-gold-500 text-gray-600 dark:text-gray-300 transition-colors">
+                      <button onClick={(e) => e.preventDefault()} className="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-gray-200 dark:border-white/10 rounded-lg hover:border-gold-500 text-gray-600 dark:text-gray-300 transition-colors">
                         <QrCode className="w-3.5 h-3.5" /> QR
                       </button>
                     ) : null}
                     
                     {["PENDING", "CONFIRMED"].includes(item.status) && (
                       <button 
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.preventDefault()
                           const reason = window.prompt("Reason for cancellation:")
                           if (reason) {
                             if (item.isGroup) {
@@ -158,6 +160,7 @@ export default function BookingsPage() {
                 </div>
               </div>
             </motion.div>
+            </Link>
           ))}
         </div>
       )}
