@@ -39,7 +39,7 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  const isTransparentPage = pathname === "/" || pathname === "/rooms" || pathname.startsWith("/rooms/")
+  const isTransparentPage = pathname === "/" || pathname === "/rooms"
 
   return (
     <nav

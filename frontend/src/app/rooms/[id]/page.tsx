@@ -22,6 +22,7 @@ export default function RoomDetailPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
   const [activeImg, setActiveImg] = useState(0)
+  const [showGallery, setShowGallery] = useState(false)
   const { checkIn, checkOut, adults, children, setCheckIn, setCheckOut, setAdults, setChildren } = useBookingStore()
 
   const { data: room, isLoading } = useQuery({
@@ -82,98 +83,76 @@ export default function RoomDetailPage() {
 
   return (
     <MainLayout>
-      <div className="relative">
-        {/* Image Gallery */}
-        <div className="relative h-[60vh] bg-gray-900 overflow-hidden">
-          {images[activeImg]?.isVideo ? (
-            <video
-              src={images[activeImg]?.url}
-              className="object-cover w-full h-full"
-              autoPlay muted loop playsInline
-            />
-          ) : (
-            <img
-              src={images[activeImg]?.url}
-              alt={room.name}
-              className="object-cover w-full h-full"
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/60" />
-
-          {/* Discount Badge */}
-          {room.basePrice && room.basePrice > room.pricePerNight && (
-            <div className="absolute top-24 left-6 bg-red-500 text-white px-4 py-2 rounded-xl font-bold text-lg shadow-lg">
-              {Math.round(((room.basePrice - room.pricePerNight) / room.basePrice) * 100)}% OFF
-            </div>
-          )}
-
-          {images.length > 1 && (
-            <>
-              <button
-                onClick={() => setActiveImg((p) => (p === 0 ? images.length - 1 : p - 1))}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur flex items-center justify-center text-white hover:bg-gold-500 transition-colors"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setActiveImg((p) => (p === images.length - 1 ? 0 : p + 1))}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 backdrop-blur flex items-center justify-center text-white hover:bg-gold-500 transition-colors"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                {images.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setActiveImg(i)}
-                    className={`w-2 h-2 rounded-full transition-all ${i === activeImg ? "bg-gold-400 w-6" : "bg-white/50"}`}
-                  />
-                ))}
+      <div className="pt-28 pb-16 bg-gray-50 dark:bg-luxury-darker">
+        <div className="container-custom px-4 md:px-8">
+          {/* Header Section */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <span className="bg-gold-500/10 text-gold-600 dark:text-gold-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                  {room.roomType.replace("_", " ")}
+                </span>
+                {room.avgRating && (
+                  <div className="flex items-center gap-1 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    <Star className="w-4 h-4 fill-gold-400 text-gold-400" />
+                    {room.avgRating.toFixed(1)} <span className="text-gray-400 font-normal">({room.reviewCount} reviews)</span>
+                  </div>
+                )}
               </div>
-            </>
-          )}
-
-          {/* Thumbnail strip */}
-          {images.length > 1 && (
-            <div className="absolute bottom-4 right-4 flex gap-2 overflow-hidden max-w-xs">
-              {images.slice(0, 4).map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveImg(i)}
-                  className={`relative w-14 h-14 rounded-lg overflow-hidden border-2 transition-all ${
-                    i === activeImg ? "border-gold-500" : "border-white/30"
-                  }`}
-                >
-                  <img src={img.url} alt="" className="object-cover w-full h-full" />
-                </button>
-              ))}
+              <h1 className="font-serif text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
+                {room.name}
+              </h1>
             </div>
-          )}
-        </div>
+            
+            <div className="flex items-center gap-3">
+              <button className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 hover:border-gold-500 hover:text-gold-500 transition-colors text-gray-600 dark:text-gray-300 font-medium text-sm bg-white dark:bg-white/5 shadow-sm">
+                <Share2 className="w-4 h-4" /> Share
+              </button>
+              <button className="flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 hover:border-red-500 hover:text-red-500 transition-colors text-gray-600 dark:text-gray-300 font-medium text-sm bg-white dark:bg-white/5 shadow-sm">
+                <Heart className="w-4 h-4" /> Save
+              </button>
+            </div>
+          </div>
 
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-10">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          {/* Modern Image Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-[50vh] md:h-[60vh] mb-12 rounded-3xl overflow-hidden shadow-2xl shadow-black/5 relative">
+            {images.length >= 3 ? (
+              <>
+                <div className="md:col-span-2 md:row-span-2 relative group cursor-pointer" onClick={() => { setActiveImg(0); setShowGallery(true); }}>
+                  <img src={images[0].url} alt={room.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+                </div>
+                <div className="md:col-span-2 h-full relative group cursor-pointer" onClick={() => { setActiveImg(1); setShowGallery(true); }}>
+                  <img src={images[1].url} alt={room.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+                </div>
+                <div className="md:col-span-1 h-full relative group cursor-pointer hidden md:block" onClick={() => { setActiveImg(2); setShowGallery(true); }}>
+                  <img src={images[2].url} alt={room.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+                </div>
+                <div className="md:col-span-1 h-full relative group cursor-pointer hidden md:block" onClick={() => { setActiveImg(images[3] ? 3 : 0); setShowGallery(true); }}>
+                  <img src={images[3]?.url || images[0].url} alt={room.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                    <span className="text-white font-semibold text-lg drop-shadow-md">View All Photos</span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="md:col-span-4 relative group cursor-pointer" onClick={() => setShowGallery(true)}>
+                <img src={images[0].url} alt={room.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              </div>
+            )}
+            
+            {room.basePrice && room.basePrice > room.pricePerNight && (
+              <div className="absolute top-4 left-4 bg-red-500/90 backdrop-blur-md text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg z-10 border border-white/20">
+                {Math.round(((room.basePrice - room.pricePerNight) / room.basePrice) * 100)}% OFF
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Room Info */}
             <div className="lg:col-span-2">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <span className="text-gold-500 text-sm font-medium tracking-widest uppercase">
-                    {room.roomType.replace("_", " ")} · Room {room.roomNumber}
-                  </span>
-                  <h1 className="font-serif text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mt-1">
-                    {room.name}
-                  </h1>
-                </div>
-                <div className="flex gap-2">
-                  <button className="p-2 rounded-full border border-gray-200 dark:border-white/10 hover:border-gold-500 transition-colors text-gray-500 dark:text-gray-400">
-                    <Heart className="w-5 h-5" />
-                  </button>
-                  <button className="p-2 rounded-full border border-gray-200 dark:border-white/10 hover:border-gold-500 transition-colors text-gray-500 dark:text-gray-400">
-                    <Share2 className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
 
               {room.avgRating && (
                 <div className="flex items-center gap-2 mb-6">
@@ -437,6 +416,64 @@ export default function RoomDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Fullscreen Image Gallery Modal */}
+      {showGallery && (
+        <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center">
+          <button 
+            onClick={() => setShowGallery(false)}
+            className="absolute top-6 right-6 p-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors z-50"
+          >
+            <AlertCircle className="w-6 h-6 hidden" />
+            <span className="text-xl font-bold leading-none px-1">×</span>
+          </button>
+          
+          <div className="relative w-full max-w-6xl h-[80vh] px-4 md:px-12 flex items-center justify-center">
+            {images.length > 1 && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setActiveImg((p) => (p === 0 ? images.length - 1 : p - 1)) }}
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-gold-500 flex items-center justify-center text-white transition-colors z-50"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+            )}
+            
+            <div className="relative w-full h-full flex items-center justify-center">
+              {images[activeImg]?.isVideo ? (
+                <video src={images[activeImg]?.url} className="max-w-full max-h-full object-contain rounded-lg" controls autoPlay />
+              ) : (
+                <img src={images[activeImg]?.url} alt={room.name} className="max-w-full max-h-full object-contain rounded-lg shadow-2xl" />
+              )}
+            </div>
+            
+            {images.length > 1 && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setActiveImg((p) => (p === images.length - 1 ? 0 : p + 1)) }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-gold-500 flex items-center justify-center text-white transition-colors z-50"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            )}
+          </div>
+          
+          {/* Thumbnails in modal */}
+          {images.length > 1 && (
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 overflow-x-auto max-w-full px-4 py-2">
+              {images.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveImg(i)}
+                  className={`flex-shrink-0 relative w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                    i === activeImg ? "border-gold-500 opacity-100" : "border-transparent opacity-50 hover:opacity-100"
+                  }`}
+                >
+                  <img src={img.url} alt="" className="object-cover w-full h-full" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </MainLayout>
   )
 }
