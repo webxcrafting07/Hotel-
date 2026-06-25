@@ -154,15 +154,7 @@ export default function RoomDetailPage() {
             {/* Room Info */}
             <div className="lg:col-span-2">
 
-              {room.avgRating && (
-                <div className="flex items-center gap-2 mb-6">
-                  {Array(5).fill(0).map((_, i) => (
-                    <Star key={i} className={`w-4 h-4 ${i < Math.floor(room.avgRating!) ? "fill-gold-400 text-gold-400" : "text-gray-300"}`} />
-                  ))}
-                  <span className="text-gold-500 font-medium">{room.avgRating.toFixed(1)}</span>
-                  <span className="text-gray-500 text-sm">({room.reviewCount} reviews)</span>
-                </div>
-              )}
+
 
               <div className="flex flex-wrap gap-6 py-6 border-y border-gray-100 dark:border-white/5 mb-6">
                 {[
