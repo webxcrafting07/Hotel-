@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {
   createBooking, getBookings, getBooking, cancelBooking,
-  checkIn, checkOut, getTodaysActivity, createOfflineBooking, sendInvoiceEmail, createGroupBooking
+  checkIn, checkOut, getTodaysActivity, createOfflineBooking, sendInvoiceEmail, createGroupBooking, getGroupBooking
 } from '../controllers/booking.controller';
 import { authenticate, authorize } from '../middleware/auth';
 import { bookingLimiter } from '../middleware/rateLimiter';
