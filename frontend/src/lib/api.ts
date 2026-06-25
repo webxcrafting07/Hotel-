@@ -59,9 +59,6 @@ api.interceptors.response.use(
         return api(originalRequest)
       } catch (refreshError) {
         processQueue(refreshError, null)
-        if (typeof window !== 'undefined' && !['/login', '/signup'].includes(window.location.pathname)) {
-          window.location.href = '/login'
-        }
         return Promise.reject(refreshError)
       } finally {
         isRefreshing = false
